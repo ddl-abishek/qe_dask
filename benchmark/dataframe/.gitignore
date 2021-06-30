@@ -1,0 +1,3 @@
+*.csv
+dask-worker-space
+.ipynb_checkpoints

@@ -4,9 +4,7 @@ from datetime import datetime
 import os
 
 if __name__ == '__main__':
-    service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
-    service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
-    client = Client(f'{service_host}:{service_port}')
+    client = Client()
     
     start = datetime.now()    
     #creating a 2000x2000 array whose values are normally distributed with zero mean and unit variance

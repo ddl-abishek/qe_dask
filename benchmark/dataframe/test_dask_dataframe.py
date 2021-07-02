@@ -4,11 +4,8 @@ import dask.dataframe as dd
 import os
 from datetime import datetime
 
-service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
-service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
-
 if __name__ == '__main__':
-    client = Client(f'{service_host}:{service_port}')
+    client = Client()
     
     start = datetime.now()
     

@@ -9,9 +9,7 @@ def svd_matrix(mat):
 
 if __name__ == '__main__':
     start = datetime.now()
-    service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
-    service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
-    client = Client(f'{service_host}:{service_port}')
+    client = Client()
     
     matrices = db.from_sequence([da.random.normal(0,1,size=(200, 200),chunks=(10,10)) for _ in range(10)], npartitions=5)
     print(matrices.map(svd_matrix).compute())

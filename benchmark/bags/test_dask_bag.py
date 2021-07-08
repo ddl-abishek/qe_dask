@@ -3,6 +3,7 @@ import dask.array as da
 import dask.bag as db
 from sklearn.decomposition import TruncatedSVD
 from datetime import datetime
+import os
 
 def svd_matrix(mat):
     return TruncatedSVD(n_components=5, n_iter=7, random_state=42).fit(mat)

@@ -15,18 +15,8 @@ config = yaml.load(open("config.yml", "r"), yaml.SafeLoader)
 
 def convert_date(date): 
     date = str(date)
-    months_dict = {'01':31,
-                  '02':{'leap':29,'normal':28},
-                  '03':31,
-                  '04':30,
-                  '05':31,
-                  '06':30,
-                  '07':31,
-                  '08':31,
-                  '09':30,
-                  '10':31,
-                  '11':30,
-                  '12':31}
+    months_dict = {'01':31,'02':{'leap':29,'normal':28},'03':31,'04':30,'05':31,
+                  '06':30, '07':31, '08':31,'09':30,'10':31,'11':30,'12':31}
     
     if len(date) >= 8:
         if len(date) > 8: # handling exceptions for  2015 data
@@ -79,8 +69,8 @@ if __name__ == "__main__":
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
 
     client = Client(address=f'{service_host}:{service_port}', direct_to_workers=True)
-    map = client.map(preprocess_csv, ['2013-14', '2015', '2016', '2017'])
-    client.gather(map)
+    dask_map = client.map(preprocess_csv, ['2013-14', '2015', '2016', '2017'])
+    client.gather(dask_map)
 
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument('--csv_year', type=str, help="year of csv ; possible values - 2013-14, 2015, 2016, 2017", required=True)

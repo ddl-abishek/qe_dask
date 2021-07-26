@@ -1,0 +1,20 @@
+ Dataset:
+     'dir' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}"
+     '2013-14' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/Parking_Violations_Issued_-_Fiscal_Year_2014__August_2013___June_2014_.csv"
+     '2015' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/Parking_Violations_Issued_-_Fiscal_Year_2015.csv"
+     '2016' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/Parking_Violations_Issued_-_Fiscal_Year_2016.csv"
+     '2017' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/Parking_Violations_Issued_-_Fiscal_Year_2017.csv"
+ clean_data:
+     'dir' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/clean_data"
+     '2013-14' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/clean_data/clean_data_13_14.csv"
+     '2015' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/clean_data/clean_data_15.csv"
+     '2016' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/clean_data/clean_data_16.csv"
+     '2017' : f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}/clean_data/clean_data_17.csv"
+ PCA:
+     'n_components' : 3
+ KMeans:
+     'n_clusters' : 3
+     'init' : 'k-means++'
+     'random_state' : 42
+ artifacts : 
+     'path' : './artifacts'

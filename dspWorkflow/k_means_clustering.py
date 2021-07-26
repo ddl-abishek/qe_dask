@@ -1,6 +1,7 @@
 import dask.dataframe as dd
 import dask.array as da
-import pandas as pd
+from dask.distributed import Client
+
 
 # from sklearn.cluster import KMeans
 from dask_ml.cluster import KMeans
@@ -31,7 +32,7 @@ def get_kmeans_pca(csv_year):
                                     'Issuer Precinct' : float,
                                     'Vehicle Year' : float}).dropna()
     
-    # preprocessing the dataset
+    # normalizing the dataset
     std_clean_data = StandardScaler().fit_transform(clean_data)
     
     # applying principal component analysis 
@@ -72,12 +73,19 @@ def plot(df_kmeans_pca, csv_year):
     plt.savefig(f"{config['artifacts']['path']}/scatter_{str(datetime.now()).replace(' ','_')}_{csv_year}.png")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--csv_year', type=str,help="year of .csv ; possible values - 2013-14, 2015, 2016, 2017",required=True)
+    service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
+    service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
+
+    client = Client(address=f'{service_host}:{service_port}', direct_to_workers=True)
+    dask_map = client.map(preprocess_csv, ['2013-14', '2015', '2016', '2017'])
+    client.gather(dask_map)
     
-    args = parser.parse_args()
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--csv_year', type=str,help="year of .csv ; possible values - 2013-14, 2015, 2016, 2017",required=True)
     
-    assert args.csv_year in ['2013-14', '2015', '2016', '2017']
+#     args = parser.parse_args()
     
-    df_kmeans_pca = get_kmeans_pca(args.csv_year)
-    plot(df_kmeans_pca, args.csv_year)
+#     assert args.csv_year in ['2013-14', '2015', '2016', '2017']
+    
+#     df_kmeans_pca = get_kmeans_pca(args.csv_year)
+#     plot(df_kmeans_pca, args.csv_year)

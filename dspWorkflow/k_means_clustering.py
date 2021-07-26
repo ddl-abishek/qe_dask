@@ -57,10 +57,7 @@ def get_kmeans_pca(csv_year):
     df_kmeans_pca['Segment K-means PCA'] = kmeans_pca.labels_
     df_kmeans_pca['Segment'] = df_kmeans_pca['Segment K-means PCA'].map({0:'first',1:'second',2:'third'})
     df_kmeans_pca = df_kmeans_pca.drop(columns='Segment K-means PCA')
-    
-    return df_kmeans_pca.compute()
 
-def plot(df_kmeans_pca, csv_year):    
     x_axis = df_kmeans_pca['Component 2']
     y_axis = df_kmeans_pca['Component 1']
     plt.figure(figsize=(12,9))
@@ -77,7 +74,7 @@ if __name__ == "__main__":
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
 
     client = Client(address=f'{service_host}:{service_port}', direct_to_workers=True)
-    dask_map = client.map(preprocess_csv, ['2013-14', '2015', '2016', '2017'])
+    dask_map = client.map(get_kmeans_pca, ['2013-14', '2015', '2016', '2017'])
     client.gather(dask_map)
     
 #     parser = argparse.ArgumentParser()

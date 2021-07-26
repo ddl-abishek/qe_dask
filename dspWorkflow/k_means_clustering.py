@@ -1,0 +1,84 @@
+import dask.dataframe as dd
+import dask.array as da
+import pandas as pd
+
+# from sklearn.cluster import KMeans
+from dask_ml.cluster import KMeans
+
+# from sklearn.preprocessing import StandardScaler
+from dask_ml.preprocessing import StandardScaler
+
+# from sklearn.decomposition import PCA
+from dask_ml.decomposition import PCA
+
+import numpy as np
+from collections import defaultdict
+from matplotlib import pyplot as plt
+import seaborn as sns
+sns.set()
+import argparse
+import yaml
+from datetime import datetime
+import os
+
+config = yaml.load(open("config.yml", "r"), yaml.SafeLoader)
+
+def get_kmeans_pca(csv_year):
+    clean_data = dd.read_csv(config['clean_data'][csv_year], 
+                             usecols=['Vehicle Expiration Date', 'Violation Precinct', 'Issuer Precinct', 'Vehicle Year'], 
+                             dtype={'Vehicle Expiration Date' : float,
+                                    'Violation Precinct' : float,
+                                    'Issuer Precinct' : float,
+                                    'Vehicle Year' : float}).dropna()
+    
+    # preprocessing the dataset
+    clean_data = StandardScaler().fit_transform(clean_data)
+    breakpoint()
+    
+    # applying principal component analysis 
+    pca = PCA(n_components = config['PCA']['n_components'])
+    pca.fit(da.from_array(clean_data, chunks=clean_data.shape))
+    # calculating the resulting components scores for the elements in our data set
+    scores_pca = pca.transform(clean_data)
+    
+    # clustering via k means
+    kmeans_pca = KMeans(n_clusters = config['KMeans']['n_clusters'], 
+                        init = config['KMeans']['init'], 
+                        random_state = config['KMeans']['random_state'])
+    kmeans_pca.fit(scores_pca)
+    
+    df_kmeans_pca = dd.concatenate([dd.DataFrame(clean_data,columns=['Vehicle Expiration Date',
+                                                                'Violation Precinct',
+                                                                'Issuer Precinct',
+                                                                'Vehicle Year']),
+                               dd.DataFrame(scores_pca,columns=['Component 1','Component 2','Component 3'])],axis=1)
+    
+    # the last column we add contains the pca k-means clutering labels
+    df_kmeans_pca['Segment K-means PCA'] = kmeans_pca.labels_
+    df_kmeans_pca['Segment'] = df_kmeans_pca['Segment K-means PCA'].map({0:'first',1:'second',2:'third'})
+    df_kmeans_pca = df_kmeans_pca.drop(columns='Segment K-means PCA')
+    
+    return df_kmeans_pca
+
+def plot(df_kmeans_pca, csv_year):    
+    x_axis = df_kmeans_pca['Component 2']
+    y_axis = df_kmeans_pca['Component 1']
+    plt.figure(figsize=(12,9))
+    sns.scatterplot(x_axis,y_axis,hue=df_kmeans_pca['Segment'],palette=['r','g','b'])
+    plt.title('Clusters by PCA Components')
+    
+    if not(os.path.isdir(config['artifacts']['path'])):
+        os.makedirs(config['artifacts']['path'])
+
+    plt.savefig(f"{config['artifacts']['path']}/scatter_{str(datetime.now()).replace(' ','_')}_{csv_year}.png")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--csv_year', type=str ,help="year of .csv ; possible values - 2013-14, 2015, 2016, 2017", required=True)
+    
+    args = parser.parse_args()
+    
+    assert args.csv_year in ['2013-14', '2015', '2016', '2017']
+    
+    df_kmeans_pca = get_kmeans_pca(args.csv_year)
+    plot(df_kmeans_pca, args.csv_year)

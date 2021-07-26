@@ -11,7 +11,7 @@ from matplotlib import pyplot
 service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
 service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
 
-config = yaml.load(open('./config.yml','r'), Loader=yaml.FullLoader)[0]
+config = yaml.load(open('./config.yml','r'), Loader=yaml.FullLoader)
 
     start = datetime.now()
     

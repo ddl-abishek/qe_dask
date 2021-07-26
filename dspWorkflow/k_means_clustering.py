@@ -32,14 +32,13 @@ def get_kmeans_pca(csv_year):
                                     'Vehicle Year' : float}).dropna()
     
     # preprocessing the dataset
-    clean_data = StandardScaler().fit_transform(clean_data)
+    std_clean_data = StandardScaler().fit_transform(clean_data)
     
     # applying principal component analysis 
     pca = PCA(n_components = config['PCA']['n_components'],svd_solver='auto')
-    pca.fit(clean_data.to_dask_array(lengths=True))
+    pca.fit(std_clean_data.to_dask_array(lengths=True))
     # calculating the resulting components scores for the elements in our data set
     scores_pca = pca.transform(clean_data.to_dask_array(lengths=True))
-#     breakpoint()
     
     # clustering via k means
     kmeans_pca = KMeans(n_clusters = config['KMeans']['n_clusters'], 
@@ -47,22 +46,18 @@ def get_kmeans_pca(csv_year):
                         random_state = config['KMeans']['random_state'])
     kmeans_pca.fit(scores_pca)
     
-#     df_kmeans_pca = dd.multi.concat([dd.DataFrame(clean_data,columns=['Vehicle Expiration Date',
-#                                                                 'Violation Precinct',
-#                                                                 'Issuer Precinct',
-#                                                                 'Vehicle Year']),
-#                                dd.DataFrame(scores_pca,columns=['Component 1','Component 2','Component 3'])],axis=1)
-    breakpoint()
-    dask_scores_pca = dd.from_pandas(pd.DataFrame(scores_pca,columns=['Component 1','Component 2','Component 3']))
 
-    df_kmeans_pca = dd.multi.concat([clean_data,dask_socres_pca],axis=1)
+    scores_pca = dd.from_array(scores_pca,columns=['Component 1','Component 2','Component 3'])
+    clean_data = clean_data.repartition(npartitions=5)
+    scores_pca = scores_pca.repartition(npartitions=5)
+    df_kmeans_pca = dd.concat([clean_data.reset_index(drop=True),scores_pca.reset_index(drop=True)],axis=1)
 
     # the last column we add contains the pca k-means clutering labels
     df_kmeans_pca['Segment K-means PCA'] = kmeans_pca.labels_
     df_kmeans_pca['Segment'] = df_kmeans_pca['Segment K-means PCA'].map({0:'first',1:'second',2:'third'})
     df_kmeans_pca = df_kmeans_pca.drop(columns='Segment K-means PCA')
     
-    return df_kmeans_pca
+    return df_kmeans_pca.compute()
 
 def plot(df_kmeans_pca, csv_year):    
     x_axis = df_kmeans_pca['Component 2']

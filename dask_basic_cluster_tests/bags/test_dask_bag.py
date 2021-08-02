@@ -23,4 +23,4 @@ if __name__ == '__main__':
     with performance_report(filename=f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"):
         dask_submit = client.submit(test_bag, 1)
         print(dask_submit.result())
-    
+    os.system(f"cp /mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html /mnt/code")

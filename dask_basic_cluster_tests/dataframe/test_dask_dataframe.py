@@ -17,6 +17,3 @@ if __name__ == '__main__':
     
     end = datetime.now()
     print(f'test passed {end-start}')
-
-    
-    

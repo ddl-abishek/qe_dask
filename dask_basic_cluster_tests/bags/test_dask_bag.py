@@ -27,5 +27,4 @@ if __name__ == '__main__':
         dask_submit = client.submit(test_bag, 1)
         print(dask_submit.result())
 
-    os.system(f"cp {filename} /mnt/code")
     client.close()

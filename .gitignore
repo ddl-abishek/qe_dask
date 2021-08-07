@@ -1,2 +1,5 @@
-.ipynb_checkpoint
+qe_dask_benchmark-main
+*.ipynb
+.ipynb_checkpoints
 __pycache__
+*.html

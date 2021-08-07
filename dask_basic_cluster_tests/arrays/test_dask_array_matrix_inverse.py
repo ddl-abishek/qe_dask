@@ -25,9 +25,8 @@ if __name__ == '__main__':
     client.restart()
     
     filename=f"/mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html".replace(' ','')
-    breakpoint()
     
-    with performance_report(filename=f"/mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html"):
+    with performance_report(filename=filename):
         dask_submit = client.submit(test_array, 1)
         print(dask_submit.result())
 

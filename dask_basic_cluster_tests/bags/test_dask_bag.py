@@ -20,7 +20,12 @@ if __name__ == '__main__':
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
 
     client = Client(f'{service_host}:{service_port}')
-    with performance_report(filename=f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"):
+    client.wait_for_workers()
+    client.restart()
+    filename = f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"
+    with performance_report(filename=filename):
         dask_submit = client.submit(test_bag, 1)
         print(dask_submit.result())
-    os.system(f"cp /mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html /mnt/code")
+
+    os.system(f"cp {filename} /mnt/code")
+    client.close()

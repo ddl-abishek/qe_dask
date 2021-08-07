@@ -12,17 +12,25 @@ def test_array(arg):
     #computing the inverse of the array
     inv_a = da.linalg.inv(a).compute()
 
-    print(inv_a)
     end = datetime.now()
-    return f'test passed {end-start}'
+
+    return (f'test passed {end-start}',inv_a)
 
 if __name__ == '__main__':
     service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
     
     client = Client(address=f'{service_host}:{service_port}')
+    client.wait_for_workers()
+    client.restart()
+    
+    filename=f"/mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html".replace(' ','')
+    breakpoint()
     
     with performance_report(filename=f"/mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html"):
         dask_submit = client.submit(test_array, 1)
         print(dask_submit.result())
-    os.system(f"cp /mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html /mnt/code")     
+
+    os.system(f"cp {filename} /mnt/code")
+    client.restart()
+    client.close()

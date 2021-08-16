@@ -10,7 +10,7 @@ def test_array(arg):
     y = x.mean(axis=0)[::100]
     y.compute()
     end = datetime.now()
-    return f'test passed {end-start}'
+    return (f'test passed {end-start}',y)
 
     
     
@@ -18,16 +18,16 @@ if __name__ == '__main__':
     service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
     
-    client = Client(f'{service_host}:{service_port}')
-    client.wait_for_workers()
+    client = Client(address=f'{service_host}:{service_port}')
+    client.wait_for_workers(n_workers=4)
     client.restart()
     
-    filename = f"/mnt/artifacts/results/dask-report_test_dask_array_mean_along_axis_{str(datetime.now())}.html".replace(' ','')
-    with performance_report(filename=filename):
-        dask_submit = client.submit(test_array, 1)
-        print(dask_submit.result())
+    filename=f"/mnt/artifacts/results/dask-report_test_dask_array_mean_along_axis_{str(datetime.now())}.html".replace(' ','')
     
+    with performance_report(filename=filename):
+        dask_map = client.map(test_array, range(10))
+        print(client.gather(dask_map))
+
     os.system(f"cp {filename} /mnt/code")
     client.restart()
     client.close()
-

@@ -3,6 +3,7 @@ import dask.array as da
 from dask.distributed import performance_report
 from datetime import datetime
 import os
+import scipy
 
 def test_array(arg):
     start = datetime.now()    
@@ -21,14 +22,14 @@ if __name__ == '__main__':
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
     
     client = Client(address=f'{service_host}:{service_port}')
-    client.wait_for_workers()
+    client.wait_for_workers(n_workers=4)
     client.restart()
     
     filename=f"/mnt/artifacts/results/dask-report_test_dask_array_matrix_inverse_{str(datetime.now())}.html".replace(' ','')
     
     with performance_report(filename=filename):
-        dask_submit = client.submit(test_array, 1)
-        print(dask_submit.result())
+        dask_map = client.map(test_array, range(10))
+        print(client.gather(dask_map))
 
     os.system(f"cp {filename} /mnt/code")
     client.restart()

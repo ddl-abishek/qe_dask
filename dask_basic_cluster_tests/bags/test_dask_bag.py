@@ -26,7 +26,7 @@ if __name__ == '__main__':
     filename = f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"    
     with performance_report(filename=filename):
         dask_map = client.map(test_bag, range(10))
-            print(client.gather(dask_map))
+        print(client.gather(dask_map))
 
     os.system(f"cp {filename} /mnt/code")
     client.restart()

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
 
     client = Client(f'{service_host}:{service_port}')
-    client.wait_for_workers(n_workers=4)
+    client.wait_for_workers(n_workers=3)
     client.restart()
 
 #     filename = f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"    

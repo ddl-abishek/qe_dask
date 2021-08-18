@@ -13,6 +13,7 @@ def test_bag(arg):
     matrices = db.from_sequence([da.random.normal(0,1,size=(200, 200),chunks=(10,10)) for _ in range(10)], npartitions=5)
     matrices.map(svd_matrix).compute()
     end = datetime.now()
+    
     return f'test passed {end-start}'
 
 if __name__ == '__main__':
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     client.wait_for_workers(n_workers=3)
     client.restart()
 
-    filename = f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html"    
+    filename = f"/mnt/artifacts/results/dask-report_test_dask_bag_{str(datetime.now())}.html".replace(' ','')    
     with performance_report(filename=filename):
         dask_map = client.map(test_bag, range(10))
         print(client.gather(dask_map))

@@ -18,7 +18,7 @@ if __name__ == '__main__':
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
     
     client = Client(address=f'{service_host}:{service_port}')
-    client.wait_for_workers(n_workers=4)
+    client.wait_for_workers(n_workers=3)
     client.restart()
 
     dataset_dir = f'/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}'

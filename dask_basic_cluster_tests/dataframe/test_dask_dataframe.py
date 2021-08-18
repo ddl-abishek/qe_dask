@@ -21,7 +21,7 @@ if __name__ == '__main__':
     client.wait_for_workers(n_workers=3)
     client.restart()
 
-    dataset_dir = f'/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}'
+    dataset_dir = f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}"
     
     os.system(f'wget https://dsp-workflow.s3.us-west-2.amazonaws.com/heart_failure_clinical_records_dataset.csv -P {dataset_dir}')
     

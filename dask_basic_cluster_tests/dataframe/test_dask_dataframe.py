@@ -6,7 +6,7 @@ from dask.distributed import Client, performance_report
 
 def test_dataframe(dataset_dir):
     start = datetime.now()
-    df = dd.read_csv(f'{dataset_dir}/heart_failure_clinical_records_dataset*.csv')
+    df = dd.read_csv(f'{dataset_dir}/heart_failure_clinical_records_dataset*.csv',assume_missing=True)
     mean = df.groupby('age').platelets.mean().compute()
     end = datetime.now()
     
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     service_host = os.environ['DASK_SCHEDULER_SERVICE_HOST']
     
     client = Client(address=f'{service_host}:{service_port}')
-    client.wait_for_workers(n_workers=3)
+    client.wait_for_workers(n_workers=1)
     client.restart()
 
     dataset_dir = f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}"

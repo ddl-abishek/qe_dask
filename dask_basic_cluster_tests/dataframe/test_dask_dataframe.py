@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     dataset_dir = f"/mnt/data/{os.environ['DOMINO_PROJECT_NAME']}"
     
-    os.system(f'wget https://dsp-workflow.s3.us-west-2.amazonaws.com/heart_failure_clinical_records_dataset.csv -P {dataset_dir}')
+    os.system(f'wget https://dsp-workflow.s3.us-west-2.amazonaws.com/heart_failure_clinical_records_dataset.csv --no-check-certificate -P {dataset_dir}')
     
     for i in range(60):
         os.system(f'cp {dataset_dir}/heart_failure_clinical_records_dataset.csv {dataset_dir}/heart_failure_clinical_records_dataset_{i+1}.csv')
@@ -37,4 +37,3 @@ if __name__ == '__main__':
     os.system(f"cp {filename} /mnt/code")
     client.restart()
     client.close()
-        

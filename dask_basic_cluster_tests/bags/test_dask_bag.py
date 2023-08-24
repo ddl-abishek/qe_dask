@@ -14,7 +14,7 @@ def test_bag(arg):
     matrices.map(svd_matrix).compute()
     end = datetime.now()
     
-    return f'test passed {end-start}'
+    return (f'test passed {end-start}',matrices)
 
 if __name__ == '__main__':
     service_port = os.environ['DASK_SCHEDULER_SERVICE_PORT']
